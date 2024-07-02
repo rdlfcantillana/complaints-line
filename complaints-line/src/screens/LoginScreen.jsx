@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import Input from '../components/Input';
 import Button from '../components/Button';
 import { AuthContext } from '../context/AuthContext';
@@ -16,7 +16,11 @@ const LoginScreen = ({ navigation }) => {
   const handleLogin = async () => {
     try {
       const data = await loginUser(ci, password);
-      await login(data.token);
+      if (data.roles && data.roles.includes('ciudadano')) {
+        await login(data.token);
+      } else {
+        setError('Only ciudadano can log in.');
+      }
     } catch (err) {
       setError('Invalid credentials');
     }

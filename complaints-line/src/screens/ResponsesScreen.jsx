@@ -15,6 +15,9 @@ const ResponsesScreen = ({ navigation }) => {
     } catch (error) {
       console.error(error);
     }
+
+
+    
   };
 
   useEffect(() => {

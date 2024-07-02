@@ -1,23 +1,23 @@
 import axios from 'axios';
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
 // const USER_API_URL = 'http://localhost:4000/api/user';
 const USER_API_URL = 'https://backend-quejas-production.up.railway.app/api/user';
 
 // Función para guardar el token 
 export const setToken = async (token) => {
   console.log('save token test');
-  localStorage.setItem('access_token', token);
+  AsyncStorage.setItem('access_token', token);
   //console.log(token)
 };
 
 
 // Función para obtener el token desde localStorage
 export const getToken = () => {
-  return localStorage.getItem('access_token');
+  return AsyncStorage.getItem('access_token');
 };
 
 export const removeToken = () => {
-  localStorage.removeItem('access_token');
+  AsyncStorage.removeItem('access_token');
 };
 // Crear instancia de Axios con la URL base de la API
 const userApi = axios.create({
@@ -45,11 +45,17 @@ export const loginUser = async (ci, password) => {
     const response = await userApi.post('/login-ciudadano', { ci, password }, {
       headers: {
         'Content-Type': 'application/json',
-       
       },
     });
-    await setToken(response.data.token); // Guardar el token después de iniciar sesión
-    return response.data;
+
+    const { token, roles } = response.data;
+
+    if (roles && roles.includes('ciudadano')) {
+      await setToken(token); // Guardar el token después de verificar el rol
+      return response.data;
+    } else {
+      throw new Error('Only ciudadanos can log in.');
+    }
   } catch (error) {
     console.error('Error logging in:', error);
     throw error;
@@ -70,9 +76,9 @@ export const registerUser = async (userData) => {
 
 export const getUserProfile = async (userData) => {
   try {
-    const response = await userApi.put('/profile', {
+    const response = await userApi.get('/profile', {
       headers: {
-        'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
+        'Authorization': `Bearer ${AsyncStorage.getItem('access_token')}`,
       },
     });
     return response.data;
@@ -89,7 +95,7 @@ export const updateUserProfile = async (userData) => {
   try {
     const response = await userApi.put('/profile', userData, {
       headers: {
-        'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
+        'Authorization': `Bearer ${AsyncStorage.getItem('access_token')}`,
       },
     });
     return response.data;
@@ -103,14 +109,14 @@ export const updateUserProfile = async (userData) => {
 
 // Función para cerrar sesión del usuario
 
-export const logout = async () => {
+export const logout = async (navigation) => {
   
     await userApi.post(`/logout`, {
       headers: {
-        'Authorization': localStorage.getItem('access_token'),
+        'Authorization': AsyncStorage.getItem('access_token'),
       },
     });
-    localStorage.removeItem('access_token');
+    AsyncStorage.removeItem('access_token');
     navigation.navigate('Login');
 };
 
@@ -131,12 +137,3 @@ export const sendResetPasswordEmail = async (email) => {
 
 
 
-export const resetPassword = async (token, password) => {
-  try {
-    const response = await userApi.post('/reset-password', { token, password });
-    return response.data;
-  } catch (error) {
-    console.error('Error resetting password:', error);
-    throw error;
-  }
-};

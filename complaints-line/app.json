@@ -1,21 +1,24 @@
 {
   "expo": {
     "name": "complaints-line",
+    "displayName": "ComplaintsLine",
     "slug": "complaints-line",
     "version": "1.0.0",
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "orientation": "portrait",
-    "icon": "",
-    "userInterfaceStyle": "light",
+    "icon": "./assets/alarma.png",
+    "userInterfaceStyle": "automatic",
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    "ios": {
-      "supportsTablet": true
-    },
     "android": {
-      "package": "com.rdlfcantillana.complaintsline"
+      "package": "com.rdlfcantillana.complaintsline",
+      "versionCode": 1 ,
+      "permissions": ["ACCESS_FINE_LOCATION", "ACCESS_COARSE_LOCATION"]
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -31,9 +34,7 @@
         "projectId": "e24f736d-2716-4474-b6ba-b509a0b89604"
       }
     },
-    "runtimeVersion": {
-      "policy": "appVersion"
-    },
+    "runtimeVersion": "1.0.0",
     "updates": {
       "url": "https://u.expo.dev/e24f736d-2716-4474-b6ba-b509a0b89604"
     }

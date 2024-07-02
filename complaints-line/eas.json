@@ -9,18 +9,14 @@
       "channel": "development"
     },
     "preview": {
-      "distribution": "internal",
-      "channel": "preview"
-    },
-    "production": {
-      "env": {
-        "EXPO_PUBLIC_API_URL": "https://backend-quejas-production.up.railway.app"
-      },
-      "channel": "production",
       "android": {
         "buildType": "apk"
+      },
+      "env": {
+        "EXPO_PUBLIC_API_URL": "https://backend-quejas-production.up.railway.app"
       }
-    }
+    },
+    "production": {}
   },
   "submit": {
     "production": {}

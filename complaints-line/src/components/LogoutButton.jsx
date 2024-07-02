@@ -1,11 +1,8 @@
 import React from 'react';
-import { Button, Alert, StyleSheet } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { Button, Alert } from 'react-native';
 import { logout } from '../api/auth';
 
-const LogoutButton = () => {
-  const navigation = useNavigation();
-
+const LogoutButton = ({ navigation }) => {
   const handleLogout = async () => {
     try {
       await logout();

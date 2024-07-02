@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { getToken } from './auth'; 
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // const CIUDADANO_API_URL = 'http://localhost:4000/api/ciudadano';
 
@@ -9,7 +10,7 @@ const ciudadanoApi = axios.create({
   baseURL: CIUDADANO_API_URL,
   headers: {
     'Content-Type': 'application/json',
-    'Authorization': localStorage.getItem('access_token'), 
+    'Authorization': AsyncStorage.getItem('access_token'), 
   }
 });
 
@@ -35,7 +36,7 @@ export const getComplaintTypes = async () => {
   try {
     const response = await ciudadanoApi.get('/complaint-types',{
        header:{
-        'Authorization': localStorage.getItem('access_token'),
+        'Authorization': AsyncStorage.getItem('access_token'),
           },
     });
     return response.data;
@@ -50,7 +51,7 @@ export const createComplaint = async (complaintData) => {
   try {
     const response = await ciudadanoApi.post('/create-complaint', complaintData, {
       headers: {
-        'Authorization': localStorage.getItem('access_token'),
+        'Authorization': AsyncStorage.getItem('access_token'),
       },
     });
     return response.data;
@@ -76,7 +77,7 @@ export const getFeedback = async () => {
   try {
     const response = await ciudadanoApi.get('/view-all-complaints', {
       headers: {
-        'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
+        'Authorization': `Bearer ${AsyncStorage.getItem('access_token')}`,
       },
     });
     return response.data;

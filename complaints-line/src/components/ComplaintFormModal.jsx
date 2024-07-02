@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity } from 'react-native';
 import Modal from 'react-native-modal';
-import Geolocation from 'react-native-geolocation-service';
+import * as Location from 'expo-location';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { Picker } from '@react-native-picker/picker';
 import { getComplaintTypes, createComplaint } from '../api/ciudadanoApi';
@@ -28,19 +28,26 @@ const ComplaintFormModal = ({ isVisible, onClose }) => {
     fetchComplaintTypes();
   }, []);
 
-  const handleLocation = () => {
-    Geolocation.getCurrentPosition(
-      (position) => {
-        setLatitude(position.coords.latitude);
-        setLongitude(position.coords.longitude);
-        setLocation(`${position.coords.latitude}, ${position.coords.longitude}`);
-      },
-      (error) => {
-        console.error(error);
-        alert('Error getting location: ' + error.message);
-      },
-      { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
-    );
+  useEffect(() => {
+    (async () => {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        alert('Permission to access location was denied');
+        return;
+      }
+
+      let location = await Location.getCurrentPositionAsync({});
+      setLatitude(location.coords.latitude);
+      setLongitude(location.coords.longitude);
+      setLocation(`${location.coords.latitude}, ${location.coords.longitude}`);
+    })();
+  }, []);
+
+  const handleLocation = async () => {
+    let location = await Location.getCurrentPositionAsync({});
+    setLatitude(location.coords.latitude);
+    setLongitude(location.coords.longitude);
+    setLocation(`${location.coords.latitude}, ${location.coords.longitude}`);
   };
 
   const handleSubmit = async () => {
