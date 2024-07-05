@@ -2,17 +2,33 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity } from 'react-native';
 import Modal from 'react-native-modal';
 import * as Location from 'expo-location';
+import MapView, { Marker } from 'react-native-maps';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { Picker } from '@react-native-picker/picker';
 import { getComplaintTypes, createComplaint } from '../api/ciudadanoApi';
 
-const ComplaintFormModal = ({ isVisible, onClose }) => {
-  const [description, setDescription] = useState('');
-  const [location, setLocation] = useState('');
-  const [latitude, setLatitude] = useState(null);
-  const [longitude, setLongitude] = useState(null);
+const ComplaintFormModal = ({
+  isVisible,
+  onClose,
+  resetForm,
+  description,
+  setDescription,
+  selectedType,
+  setSelectedType,
+  location,
+  setLocation,
+  latitude,
+  setLatitude,
+  longitude,
+  setLongitude
+}) => {
   const [complaintTypes, setComplaintTypes] = useState([]);
-  const [selectedType, setSelectedType] = useState('');
+  const [region, setRegion] = useState({
+    latitude: 37.78825,
+    longitude: -122.4324,
+    latitudeDelta: 0.01,
+    longitudeDelta: 0.01,
+  });
 
   useEffect(() => {
     const fetchComplaintTypes = async () => {
@@ -40,14 +56,42 @@ const ComplaintFormModal = ({ isVisible, onClose }) => {
       setLatitude(location.coords.latitude);
       setLongitude(location.coords.longitude);
       setLocation(`${location.coords.latitude}, ${location.coords.longitude}`);
+      setRegion({
+        ...region,
+        latitude: location.coords.latitude,
+        longitude: location.coords.longitude,
+      });
     })();
   }, []);
+
+  useEffect(() => {
+    if (isVisible) {
+      resetForm();
+    }
+  }, [isVisible]);
 
   const handleLocation = async () => {
     let location = await Location.getCurrentPositionAsync({});
     setLatitude(location.coords.latitude);
     setLongitude(location.coords.longitude);
     setLocation(`${location.coords.latitude}, ${location.coords.longitude}`);
+    setRegion({
+      ...region,
+      latitude: location.coords.latitude,
+      longitude: location.coords.longitude,
+    });
+  };
+
+  const handleMapPress = (e) => {
+    const { latitude, longitude } = e.nativeEvent.coordinate;
+    setLatitude(latitude);
+    setLongitude(longitude);
+    setLocation(`${latitude}, ${longitude}`);
+    setRegion({
+      ...region,
+      latitude,
+      longitude,
+    });
   };
 
   const handleSubmit = async () => {
@@ -67,7 +111,7 @@ const ComplaintFormModal = ({ isVisible, onClose }) => {
   };
 
   return (
-    <Modal isVisible={isVisible} onBackdropPress={onClose}>
+    <Modal isVisible={isVisible} onBackdropPress={onClose} style={styles.modal}>
       <View style={styles.modalContent}>
         <Text style={styles.title}>Report a Complaint</Text>
         <TextInput
@@ -98,6 +142,16 @@ const ComplaintFormModal = ({ isVisible, onClose }) => {
             <Icon name="location-outline" size={30} color="#000" />
           </TouchableOpacity>
         </View>
+        <MapView
+          style={styles.map}
+          region={region}
+          onRegionChangeComplete={(newRegion) => setRegion(newRegion)}
+          onPress={handleMapPress}
+        >
+          {latitude && longitude && (
+            <Marker coordinate={{ latitude, longitude }} />
+          )}
+        </MapView>
         <View style={styles.buttonContainer}>
           <Button title="Cancel" onPress={onClose} />
           <Button title="Submit" onPress={handleSubmit} />
@@ -108,10 +162,16 @@ const ComplaintFormModal = ({ isVisible, onClose }) => {
 };
 
 const styles = StyleSheet.create({
+  modal: {
+    justifyContent: 'center',
+    margin: 0,
+  },
   modalContent: {
     backgroundColor: 'white',
     padding: 20,
     borderRadius: 10,
+    margin: 20,
+    maxHeight: '90%',
   },
   title: {
     fontSize: 20,
@@ -127,9 +187,15 @@ const styles = StyleSheet.create({
   locationContainer: {
     flexDirection: 'row',
     alignItems: 'center',
+    marginBottom: 10,
   },
   locationInput: {
     flex: 1,
+  },
+  map: {
+    height: 200,
+    borderRadius: 10,
+    marginBottom: 10,
   },
   buttonContainer: {
     flexDirection: 'row',

@@ -2,26 +2,30 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
 import { getAllComplaints } from '../api/ciudadanoApi';
 import ComplaintFormModal from '../components/ComplaintFormModal';
-import { useIsFocused, useNavigation } from '@react-navigation/native';
+import { useIsFocused } from '@react-navigation/native';
 
-const HomeScreen = ({ navigation }) => {
+const HomeScreen = () => {
   const isFocused = useIsFocused();
   const [complaints, setComplaints] = useState([]);
   const [isModalVisible, setModalVisible] = useState(false);
+  const [description, setDescription] = useState('');
+  const [selectedType, setSelectedType] = useState('');
+  const [location, setLocation] = useState('');
+  const [latitude, setLatitude] = useState(null);
+  const [longitude, setLongitude] = useState(null);
 
   const fetchComplaints = async () => {
     try {
       const response = await getAllComplaints();
 
-      // Ordenar las quejas por fecha de creación, más recientes primero
       const sortedComplaints = response.sort((a, b) => {
         if (a.status === 'realizado' && b.status !== 'realizado') {
-          return 1; // Mueve las quejas realizadas hacia abajo
+          return 1;
         }
         if (a.status !== 'realizado' && b.status === 'realizado') {
-          return -1; // Mueve las quejas no realizadas hacia arriba
+          return -1;
         }
-        return new Date(b.createdAt) - new Date(a.createdAt); // Ordenar por fecha de creación, más recientes primero
+        return new Date(b.createdAt) - new Date(a.createdAt);
       });
 
       setComplaints(sortedComplaints);
@@ -40,6 +44,14 @@ const HomeScreen = ({ navigation }) => {
     <ComplaintCard complaint={item} />
   );
 
+  const resetForm = () => {
+    setDescription('');
+    setSelectedType('');
+    setLocation('');
+    setLatitude(null);
+    setLongitude(null);
+  };
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Complaint Dashboard</Text>
@@ -50,13 +62,27 @@ const HomeScreen = ({ navigation }) => {
       />
       <TouchableOpacity
         style={styles.fab}
-        onPress={() => setModalVisible(true)}
+        onPress={() => {
+          setModalVisible(true);
+          resetForm();
+        }}
       >
         <Text style={styles.fabText}>+</Text>
       </TouchableOpacity>
       <ComplaintFormModal
         isVisible={isModalVisible}
         onClose={() => setModalVisible(false)}
+        resetForm={resetForm}
+        description={description}
+        setDescription={setDescription}
+        selectedType={selectedType}
+        setSelectedType={setSelectedType}
+        location={location}
+        setLocation={setLocation}
+        latitude={latitude}
+        setLatitude={setLatitude}
+        longitude={longitude}
+        setLongitude={setLongitude}
       />
     </View>
   );
