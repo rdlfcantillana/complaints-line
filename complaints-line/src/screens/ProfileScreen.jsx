@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, Alert } from 'react-native';
 import Input from '../components/Input';
 import Button from '../components/Button';
 import LogoutButton from '../components/LogoutButton';
-import { updateUserProfile, getUserProfile } from '../api/auth';
+import { updateUserProfile, getUserProfile, logout } from '../api/auth';
 import { AuthContext } from '../context/AuthContext';
 import { useNavigation } from '@react-navigation/native';
 
@@ -13,6 +13,7 @@ const ProfileScreen = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const navigation = useNavigation();
+  const { logout } = useContext(AuthContext);
 
   useEffect(() => {
     fetchUserProfile();
@@ -35,11 +36,24 @@ const ProfileScreen = () => {
       await updateUserProfile(updatedData);
       Alert.alert('Success', 'Profile updated successfully');
       fetchUserProfile();
-      navigation.navigate('Quejas'); // Redirigir a la pantalla "Quejas"
+      navigation.navigate('Quejas'); 
     } catch (error) {
       Alert.alert('Error', 'Failed to update profile');
     }
   };
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      Alert.alert('Logout successful', 'You have been logged out successfully.');
+    } catch (error) {
+      Alert.alert('Logout failed', error.message);
+    }
+  };
+
+
+
+
 
   return (
     <View style={styles.container}>
@@ -67,7 +81,7 @@ const ProfileScreen = () => {
       />
       <Button title="Update Profile" onPress={handleUpdateProfile} />
       <View style={styles.spacer}></View>
-      <LogoutButton />
+      <Button title="logout"onPress={(handleLogout)}></Button>
     </View>
   );
 };

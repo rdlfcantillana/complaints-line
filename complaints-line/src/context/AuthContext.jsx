@@ -1,5 +1,7 @@
 import React, { createContext, useState, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { logout as apiLogout } from '../api/auth';
+import { useNavigation } from '@react-navigation/native';
 
 export const AuthContext = createContext();
 
@@ -7,15 +9,23 @@ export const AuthProvider = ({ children }) => {
   const [userToken, setUserToken] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('Quejas');
+  const navigation = useNavigation();
 
   const login = async (token) => {
     setUserToken(token);
     await AsyncStorage.setItem('access_token', token);
+    navigation.navigate('Quejas');
   };
 
   const logout = async () => {
-    setUserToken(null);
-    await AsyncStorage.removeItem('access_token');
+    try {
+      await apiLogout();
+      setUserToken(null);
+      await AsyncStorage.removeItem('access_token');
+      navigation.navigate('Login');
+    } catch (error) {
+      console.error('Error during logout:', error);
+    }
   };
 
   const checkToken = async () => {

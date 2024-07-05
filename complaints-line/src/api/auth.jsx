@@ -117,7 +117,7 @@ export const logout = async (navigation) => {
       },
     });
     AsyncStorage.removeItem('access_token');
-    navigation.navigate('Login');
+      
 };
 
 export const sendResetPasswordEmail = async (email) => {

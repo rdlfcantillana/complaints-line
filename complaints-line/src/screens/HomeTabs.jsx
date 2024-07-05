@@ -5,8 +5,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import HomeScreen from './HomeScreen';
 import ResponsesScreen from './ResponsesScreen';
 import FeedbackScreen from './FeedbackScreen';
+import ProfileScreen from './ProfileScreen'; 
 import LogoutButton from '../components/LogoutButton';
-import ProfileScreen from './ProfileScreen';  // Importa ProfileScreen
 import { AuthContext } from '../context/AuthContext';
 
 const Tab = createBottomTabNavigator();
@@ -79,7 +79,7 @@ function HomeTabs() {
       />
       <Tab.Screen
         name="Profile"
-        component={ProfileScreen}  // Agrega ProfileScreen aquí
+        component={ProfileScreen}  
         options={{
           tabBarIcon: ({ color, size }) => (
             <Icon name="person" color={color} size={size} />
@@ -87,6 +87,16 @@ function HomeTabs() {
           headerShown: false,
         }}
       />
+      {/* <Tab.Screen
+        name="Logout"
+        component={LogoutButton}
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <Icon name="log-out" color={color} size={size} />
+          ),
+          headerShown: false,
+        }}
+      /> */}
     </Tab.Navigator>
   );
 }

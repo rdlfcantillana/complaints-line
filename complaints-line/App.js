@@ -78,10 +78,10 @@ function AppNavigator() {
 
 export default function App() {
   return (
-    <AuthProvider>
-      <NavigationContainer>
-        <AppNavigator />
-      </NavigationContainer>
-    </AuthProvider>
+    <NavigationContainer>
+      <AuthProvider>
+        <AppNavigator/>
+      </AuthProvider>
+    </NavigationContainer>
   );
 }

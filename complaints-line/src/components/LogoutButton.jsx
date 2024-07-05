@@ -3,9 +3,10 @@ import { Button, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { logout } from '../api/auth';
 
+
+
 const LogoutButton = () => {
   const navigation = useNavigation();
-
   const handleLogout = async () => {
     try {
       await logout();
